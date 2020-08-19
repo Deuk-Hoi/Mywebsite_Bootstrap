@@ -17,10 +17,11 @@ app.set('view engine', 'ejs');
 
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit : "50mb" }));
+app.use(express.urlencoded({ limit : "50mb", extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/upload', express.static('upload')); // /upload 경로를 통해 upload 디렉토리에 포함된 파일을 로드할 수 있음 (없어도 작동)
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
