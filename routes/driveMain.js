@@ -3,13 +3,14 @@ const checkDiskSpace = require('check-disk-space');
 var multer = require('multer')
 let _storage = multer.diskStorage({
   destination: function(req, file ,callback){
-      callback(null, "upload/")
+      callback(null, `upload/${req.body.saveUser}/`)
   },
   filename: function(req, file, callback){
       callback(null, req.body.filename)
   }
 })
 let upload = multer({storage: _storage})
+var fs = require('fs');
 var router = express.Router();
 
 
@@ -41,23 +42,29 @@ router.get('/show', function(req, res, next) {
 });
 
 router.post('/create', upload.single("myFile"), function(req, res, next) {
-
-    /*// 3. 파일 객체
-    let file = req.file
-
-    // 4. 파일 정보
-    let result = {
-        originalName : file.originalname,
-        size : file.size,
-    }
-
-    res.json(result);
-    res.redirect("/upload/" + req.file.originalname);//fileName
-    res.end()*/
     res.send("Upload");
     console.log(req.file)
 });
 
+router.post('/checkExistFolder', (req, res)=>{
+    var foldername = req.body.foldername;
+    console.log(foldername);
+    var json;
+    var state = 1;
+
+    function mkdir( dirPath ) {
+      const isExists = fs.existsSync( dirPath );
+      if( !isExists ) {
+          fs.mkdirSync( dirPath, { recursive: true } );
+          state = 1;
+      }else{
+        state = 0;
+      }
+    }
+    mkdir('upload/'+foldername+'/');
+    json = JSON.parse(`{"state" : "${state}"}`)
+    res.json(json);
+})
 
 
 
